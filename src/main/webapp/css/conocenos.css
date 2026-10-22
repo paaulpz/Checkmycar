@@ -1,0 +1,65 @@
+.conocenos {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    color: #243447;
+}
+
+.conocenos h1 {
+    margin: 0 0 32px;
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 2.6rem);
+}
+
+.conocenos .mini-contenedor {
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(150, 170, 190, 0.35);
+    border-radius: 16px;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.conocenos .mini-contenedor h2 {
+    margin: 0 0 14px;
+    font-size: 1.3rem;
+    color: inherit;
+}
+
+.conocenos .mini-contenedor p,
+.conocenos .mini-contenedor li {
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.conocenos .mini-contenedor p {
+    margin: 0 0 12px;
+}
+
+.conocenos .mini-contenedor ul {
+    margin: 0;
+    padding-left: 22px;
+}
+
+.conocenos .mini-contenedor li {
+    margin-bottom: 8px;
+}
+
+.conocenos .mini-contenedor > :last-child,
+.conocenos .mini-contenedor li:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+    .conocenos {
+        margin: 24px auto;
+        padding: 12px;
+    }
+
+    .conocenos .mini-contenedor {
+        padding: 20px;
+    }
+}
