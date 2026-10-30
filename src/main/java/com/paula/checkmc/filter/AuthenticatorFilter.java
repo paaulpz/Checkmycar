@@ -52,7 +52,7 @@ public class AuthenticatorFilter extends HttpFilter implements Filter {
 
         	    httpResponse.sendRedirect(
         	            httpRequest.getContextPath()
-        	            + "/html/public/cliente/login.jsp"
+        	            + "/html/public/usuarios/login.jsp"
         	    );
         	}
     }

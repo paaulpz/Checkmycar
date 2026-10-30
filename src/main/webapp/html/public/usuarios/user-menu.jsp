@@ -16,7 +16,7 @@
 
 <c:choose>
     <c:when test="${empty usuarioConectado}">
-        <a href="${pageContext.request.contextPath}/html/public/cliente/login.jsp">
+        <a href="${pageContext.request.contextPath}/html/public/usuarios/login.jsp">
             Autenticarse
         </a>
     </c:when>
@@ -30,16 +30,16 @@
             <div class="cmc-panel">
                 <h3>Tu cuenta</h3>
 
-                <a href="${pageContext.request.contextPath}/controller/private/cliente?action=detail">
+                <a href="${pageContext.request.contextPath}/controller/private/usuarios?action=detail">
                     Ver perfil
                 </a>
 
-                <a href="${pageContext.request.contextPath}/controller/public/cliente?action=changeAccount">
+                <a href="${pageContext.request.contextPath}/controller/public/usuarios?action=changeAccount">
                     Cambiar cuenta
                 </a>
 
                 <a class="cmc-salir"
-                   href="${pageContext.request.contextPath}/controller/public/cliente?action=logout">
+                   href="${pageContext.request.contextPath}/controller/public/usuarios?action=logout">
                     Salir
                 </a>
             </div>
