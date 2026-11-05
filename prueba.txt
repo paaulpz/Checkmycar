@@ -1,0 +1,1 @@
+Este seria los bytes del cartel del evento musical con ID 2.
