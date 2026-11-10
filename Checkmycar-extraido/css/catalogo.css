@@ -1,0 +1,193 @@
+
+/* GESTIÓN DEL CATÁLOGO */
+
+.content {
+    text-align: left;
+}
+
+.catalogo {
+    width: min(1050px, 100%);
+    margin: 0 auto 50px;
+    color: #30363b;
+}
+
+/* TÍTULO */
+
+.catalogo-titulo {
+    margin: 5px 0 26px;
+}
+
+.catalogo-titulo h1 {
+    margin: 5px 0 8px;
+    font-size: 32px;
+    color: #0f2a43;
+}
+
+.catalogo-titulo p {
+    margin: 0;
+    color: #60707c;
+}
+
+.catalogo-titulo .catalogo-etiqueta {
+    color: #1e5a8a;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+}
+
+/* FORMULARIO */
+
+.catalogo-form {
+    background: white;
+    border: 1px solid #dbe2e7;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.catalogo-form fieldset {
+    border: none;
+    padding: 0 0 22px;
+    margin: 0 0 22px;
+    border-bottom: 1px solid #e6ebee;
+}
+
+.catalogo-form legend {
+    font-weight: 700;
+    color: #0f2a43;
+    font-size: 19px;
+    padding: 0 0 18px;
+}
+
+/* CAMPOS */
+
+.catalogo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 22px;
+}
+
+.catalogo-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #384753;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.catalogo-form input,
+.catalogo-form select {
+    width: 100%;
+    min-height: 45px;
+    padding: 10px 12px;
+    border: 1px solid #becad2;
+    border-radius: 7px;
+    background: #fff;
+    color: #26333d;
+    font: inherit;
+}
+
+.catalogo-form input:focus,
+.catalogo-form select:focus {
+    outline: 2px solid #94b8d7;
+    outline-offset: 1px;
+}
+
+.catalogo-form select:disabled {
+    background: #f1f4f6;
+}
+
+/* FOTOGRAFÍA */
+
+.catalogo-foto input {
+    padding: 12px;
+}
+
+.catalogo-previa {
+    display: block;
+    width: min(360px, 100%);
+    max-height: 240px;
+    object-fit: cover;
+    margin-top: 15px;
+    border-radius: 8px;
+    border: 1px solid #dbe2e7;
+}
+
+.catalogo-previa[hidden] {
+    display: none;
+}
+
+/* BOTONES */
+
+.catalogo-acciones {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.catalogo-acciones button {
+    padding: 12px 22px;
+    border-radius: 7px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.catalogo-secundario {
+    background: #fff;
+    border: 1px solid #b6c4cf;
+    color: #28445b;
+}
+
+.catalogo-principal {
+    background: #1e5a8a;
+    color: #fff;
+    border: 1px solid #1e5a8a;
+}
+
+.catalogo-principal:hover {
+    background: #16466c;
+}
+
+/* MENSAJES */
+
+.catalogo-ok,
+.catalogo-error {
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    border-radius: 8px;
+}
+
+.catalogo-ok {
+    background: #e6f5e9;
+    border: 1px solid #a5d6ae;
+}
+
+.catalogo-error {
+    background: #fff0ee;
+    border: 1px solid #e8afa8;
+}
+
+.catalogo-nota {
+    margin: 18px 0 0;
+    font-size: 12px;
+    color: #697680;
+}
+
+/* ADAPTACIÓN MÓVIL */
+
+@media (max-width: 680px) {
+
+    .content {
+        padding: 18px;
+    }
+
+    .catalogo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .catalogo-form {
+        padding: 18px;
+    }
+}

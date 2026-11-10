@@ -1,0 +1,99 @@
+
+    #user-menu .cmc-cuenta {
+        position: relative;
+        display: inline-block;
+    }
+
+    #user-menu .cmc-cuenta summary {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        color: #30383e;
+        font-size: 18px;
+        font-weight: 600;
+        list-style: none;
+        cursor: pointer;
+    }
+
+    #user-menu .cmc-cuenta summary::-webkit-details-marker {
+        display: none;
+    }
+
+    #user-menu .cmc-cuenta summary::after {
+        content: "▾";
+        font-size: 14px;
+    }
+
+    #user-menu .cmc-cuenta summary:focus-visible {
+        outline: 2px solid #205e8a;
+        border-radius: 6px;
+    }
+
+    #user-menu .cmc-panel {
+        box-sizing: border-box;
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        z-index: 1000;
+        width: 260px;
+        max-width: calc(100vw - 32px);
+        padding: 18px;
+        background: #d9dee2;
+        border: 1px solid #bcc4ca;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    #user-menu .cmc-cuenta:not([open]) .cmc-panel {
+        display: none;
+    }
+
+    #user-menu .cmc-panel::before {
+        content: "";
+        position: absolute;
+        top: -9px;
+        right: 28px;
+        width: 16px;
+        height: 16px;
+        background: #d9dee2;
+        border-top: 1px solid #bcc4ca;
+        border-left: 1px solid #bcc4ca;
+        transform: rotate(45deg);
+    }
+
+    #user-menu .cmc-panel h3 {
+        margin: 0 0 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #bcc4ca;
+        color: #30383e;
+        font-size: 20px;
+    }
+
+    #user-menu .cmc-panel a {
+        display: block;
+        margin: 0;
+        padding: 12px;
+        background: transparent;
+        border: 0;
+        border-radius: 5px;
+        color: #30383e;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: left;
+        text-decoration: none;
+    }
+
+    #user-menu .cmc-panel a:hover,
+    #user-menu .cmc-panel a:focus-visible {
+        background: #c7cfd5;
+        color: #205e8a;
+    }
+
+    #user-menu .cmc-panel .cmc-salir {
+        margin-top: 10px;
+        border-top: 1px solid #bcc4ca;
+        border-radius: 0;
+        color: #b42318;
+    }
