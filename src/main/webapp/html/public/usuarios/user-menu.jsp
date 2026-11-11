@@ -19,6 +19,9 @@
         <a href="${pageContext.request.contextPath}/html/public/usuarios/login.jsp">
             Autenticarse
         </a>
+        <a href="${pageContext.request.contextPath}/html/public/usuarios/register.jsp">
+            Registrarse 
+        </a>
     </c:when>
 
     <c:otherwise>
@@ -30,9 +33,11 @@
             <div class="cmc-panel">
                 <h3>Tu cuenta</h3>
 
-                <a href="${pageContext.request.contextPath}/controller/private/usuarios?action=detail">
-                    Ver perfil
-                </a>
+               
+<a href="${pageContext.request.contextPath}/controller/private/cliente?action=detail">
+    Ver perfil
+</a>
+
 
                 <a href="${pageContext.request.contextPath}/controller/public/usuarios?action=changeAccount">
                     Cambiar cuenta

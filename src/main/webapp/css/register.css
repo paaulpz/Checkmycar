@@ -107,7 +107,7 @@
 
 .campo label span { color: var(--marca-acento); }
 
-.campo input {
+.campo input, .campo select {
     width: 100%;
     height: 44px;
     border: 1px solid var(--borde);
@@ -119,9 +119,15 @@
     outline: none;
 }
 
+.campo select:disabled {
+    background: #EBEFF2;
+    color: #89939C;
+    cursor: not-allowed;
+}
+
 .campo input::placeholder { color: #87929B; }
 
-.campo input:focus {
+.campo input:focus, .campo select:focus {
     border-color: var(--marca-acento);
     box-shadow: 0 0 0 3px rgba(30, 90, 138, 0.15);
 }

@@ -1,8 +1,15 @@
 
 package com.paula.checkmc.controller;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.paula.checkmc.model.Cliente;
 import com.paula.checkmc.model.ClienteDTO;
@@ -19,10 +26,11 @@ import com.paula.checkmc.service.impl.RolServiceImpl;
 
 import com.paula.checkmc.servlet.util.AttributeNames;
 import com.paula.checkmc.util.FileUtils;
+import com.paula.checkmc.util.JDBCUtils;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +38,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 @WebServlet("/controller/public/usuarios")
-@MultipartConfig(maxFileSize = 5 * 1024 * 1024)
+@MultipartConfig(maxFileSize = 5L * 1024 * 1024, maxRequestSize = 6L * 1024 * 1024)
 public class PublicUsuariosServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -67,11 +75,28 @@ public class PublicUsuariosServlet extends HttpServlet {
 
             // Si entramos desde el navegador, mostramos el formulario.
             if ("GET".equalsIgnoreCase(request.getMethod())) {
-                request.getRequestDispatcher(REGISTER_JSP).forward(request, response);
+                mostrarRegistro(request, response);
                 return;
             }
 
-        
+            // Los identificadores proceden de los desplegables de MySQL.
+            String localidadStr = request.getParameter("localidadId");
+            String generoStr = request.getParameter("generoId");
+            Long localidadId;
+            Long generoId;
+
+            try {
+                localidadId = Long.valueOf(localidadStr);
+                generoId = Long.valueOf(generoStr);
+                if (localidadId <= 0 || generoId <= 0) {
+                    throw new NumberFormatException("Identificadores no validos");
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("registerError", "Selecciona una localidad y un género válidos");
+                mostrarRegistro(request, response);
+                return;
+            }
+
             Cliente nuevoCliente = new Cliente();
             nuevoCliente.setDniNie(request.getParameter("dni_nie"));
             nuevoCliente.setNombre(request.getParameter("nombre"));
@@ -81,73 +106,59 @@ public class PublicUsuariosServlet extends HttpServlet {
             nuevoCliente.setPassword(request.getParameter("password"));
             nuevoCliente.setTelefono(request.getParameter("telefono"));
             nuevoCliente.setDireccion(request.getParameter("direccion"));
-            nuevoCliente.setLocalidadId( Long.valueOf(request.getParameter("localidadId")));
-            nuevoCliente.setGeneroId(Long.valueOf(request.getParameter("generoId")));
-            // Comprobar que los campos principales no estén vacíos.
+            nuevoCliente.setLocalidadId(localidadId);
+            nuevoCliente.setGeneroId(generoId);
+            // Comprobar los campos obligatorios.
             if (vacio(nuevoCliente.getDniNie()) || vacio(nuevoCliente.getNombre())
                     || vacio(nuevoCliente.getPrimerApellido())
-                    || vacio(nuevoCliente.getEmail()) || vacio(nuevoCliente.getPassword())) {
+                    || vacio(nuevoCliente.getEmail()) || vacio(nuevoCliente.getPassword())
+                    || vacio(nuevoCliente.getTelefono())) {
                 request.setAttribute("registerError", "Completa los campos obligatorios");
-                request.getRequestDispatcher(REGISTER_JSP).forward(request, response);
+                mostrarRegistro(request, response);
                 return;
             }
 
             try {
-               
-
-                // Recuperar la fotografía
+                // Recuperamos la imagen antes de guardar el cliente.
                 Part foto = request.getPart("foto-perfil");
                 String extension = "";
 
                 if (foto != null && foto.getSize() > 0) {
-
                     if ("image/jpeg".equals(foto.getContentType())) {
                         extension = ".jpg";
-
                     } else if ("image/png".equals(foto.getContentType())) {
                         extension = ".png";
-
                     } else {
-                        request.setAttribute("registerError",
-                                "La foto debe ser JPG o PNG");
-                        request.getRequestDispatcher(REGISTER_JSP)
-                                .forward(request, response);
+                        request.setAttribute("registerError", "La foto debe ser JPG o PNG");
+                        mostrarRegistro(request, response);
                         return;
                     }
                 }
 
-                // Registrar cliente en MySQL
+                // El servicio llama al DAO y guarda los datos en MySQL.
+                // También cifra la contraseña.
                 Long id = clienteService.register(nuevoCliente);
 
                 if (id == null) {
-                    request.setAttribute("registerError",
-                            "No se pudo registrar el cliente");
-                    request.getRequestDispatcher(REGISTER_JSP)
-                            .forward(request, response);
+                    request.setAttribute("registerError", "No se pudo registrar el cliente");
+                    mostrarRegistro(request, response);
                     return;
                 }
 
-                // Guardar la fotografía en el ordenador
+                // Guardar la fotografía en el ordenador donde se ejecuta Tomcat.
                 if (foto != null && foto.getSize() > 0) {
-
                     String carpeta = System.getProperty("user.home")
                             + "/Checkmycar/imagenes/perfiles/";
-
                     File directorio = new File(carpeta);
-
-                    if (!directorio.exists() && !directorio.mkdirs()) {
-                        throw new IOException("No se pudo crear la carpeta");
+                    if (!directorio.isDirectory() && !directorio.mkdirs()) {
+                        throw new IOException("No se pudo crear la carpeta de perfiles");
                     }
-
                     String ruta = carpeta + "cliente_" + id + extension;
 
                     try {
-                        FileUtils.write(ruta,
-                                foto.getInputStream().readAllBytes());
-
+                        FileUtils.write(ruta, foto.getInputStream().readAllBytes());
                     } catch (IOException e) {
-                        getServletContext().log(
-                                "Se registró el cliente, pero falló la foto", e);
+                        getServletContext().log("Se registró el cliente, pero falló la foto", e);
                     }
                 }
 
@@ -158,7 +169,7 @@ public class PublicUsuariosServlet extends HttpServlet {
             } catch (Exception e) {
                 getServletContext().log("Error registrando cliente", e);
                 request.setAttribute("registerError", "Error al registrar el cliente");
-                request.getRequestDispatcher(REGISTER_JSP).forward(request, response);
+                mostrarRegistro(request, response);
             }
 
         } else if (action == null || "login".equalsIgnoreCase(action)) {
@@ -181,6 +192,94 @@ public class PublicUsuariosServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Acción no válida");
         }
     }
+
+
+    // Cargar provincias, localidades y géneros reales desde MySQL.
+    // Solo se usa para construir el formulario de registro.
+
+private void mostrarRegistro(HttpServletRequest request,
+        HttpServletResponse response)
+        throws ServletException, IOException {
+
+    Map<Long, String> paises = new LinkedHashMap<>();
+    List<Map<String, Object>> provincias = new ArrayList<>();
+    List<Map<String, Object>> localidades = new ArrayList<>();
+    Map<Long, String> generos = new LinkedHashMap<>();
+
+    try (Connection c = JDBCUtils.getConnection()) {
+
+        // PAISES
+        String sql = "SELECT id, name FROM country ORDER BY name";
+
+        try (PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                paises.put(rs.getLong("id"), rs.getString("name"));
+            }
+        }
+
+        // PROVINCIAS
+        sql = "SELECT id, name, country_id FROM province ORDER BY name";
+
+        try (PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String, Object> provincia = new LinkedHashMap<>();
+
+                provincia.put("id", rs.getLong("id"));
+                provincia.put("nombre", rs.getString("name"));
+                provincia.put("paisId", rs.getLong("country_id"));
+
+                provincias.add(provincia);
+            }
+        }
+
+        // LOCALIDADES
+        sql = "SELECT id, name, province_id FROM locality ORDER BY name";
+
+        try (PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String, Object> localidad = new LinkedHashMap<>();
+
+                localidad.put("id", rs.getLong("id"));
+                localidad.put("nombre", rs.getString("name"));
+                localidad.put("provinciaId", rs.getLong("province_id"));
+
+                localidades.add(localidad);
+            }
+        }
+
+        // GENEROS
+        sql = "SELECT id, name FROM gender ORDER BY name";
+
+        try (PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                generos.put(rs.getLong("id"), rs.getString("name"));
+            }
+        }
+
+        request.setAttribute("paises", paises);
+        request.setAttribute("provincias", provincias);
+        request.setAttribute("localidades", localidades);
+        request.setAttribute("generos", generos);
+
+        request.getRequestDispatcher(REGISTER_JSP)
+                .forward(request, response);
+
+    } catch (Exception e) {
+        getServletContext().log("Error cargando los catálogos", e);
+        if (!response.isCommitted()) {
+            response.sendError(500, "Error cargando los catálogos");
+        }
+    }
+}
+
 
     // Igual que en el código del profesor: el POST usa doGet.
     @Override

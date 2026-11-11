@@ -19,67 +19,62 @@ public class PrivateClienteServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    public PrivateClienteServlet() {
-        super();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Recuperar al usuario que ha iniciado sesion.
         HttpSession session = request.getSession(false);
 
         if (session == null || !(session.getAttribute(AttributeNames.USER) instanceof ClienteDTO)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Debes iniciar sesion como cliente");
+            response.sendRedirect(request.getContextPath() + "/controller/public/usuarios?action=login");
             return;
         }
 
         ClienteDTO cliente = (ClienteDTO) session.getAttribute(AttributeNames.USER);
         String action = request.getParameter("action");
 
+        // Carpeta donde PublicUsuariosServlet guarda las fotos
+        String carpeta = System.getProperty("user.home") + "/Checkmycar/imagenes/perfiles/";
+        String nombre = "cliente_" + cliente.getId();
+        File fotoJpg = new File(carpeta + nombre + ".jpg");
+        File fotoPng = new File(carpeta + nombre + ".png");
+
         if ("detail".equalsIgnoreCase(action)) {
 
-            // Pendiente: mostrar los datos del cliente en una JSP.
             request.setAttribute("cliente", cliente);
-            response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED,
-                    "Falta crear la pagina de detalle del cliente");
-
-        } else if ("update".equalsIgnoreCase(action)) {
-
-            // Pendiente: modificar los datos del cliente usando ClienteService.
-            response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED,
-                    "La actualizacion del perfil esta pendiente");
+            request.setAttribute("tieneFoto", fotoJpg.isFile() || fotoPng.isFile());
+            request.getRequestDispatcher("/html/private/cliente/perfil.jsp")
+                   .forward(request, response);
 
         } else if ("get-image".equalsIgnoreCase(action)) {
 
-            // La foto siempre pertenece al cliente de la sesion.
-            // Es la misma carpeta que usa PublicUsuariosServlet.
-            String carpeta = System.getProperty("user.home")
-                    + "/Checkmycar/imagenes/perfiles/";
-            String nombre = "cliente_" + cliente.getId();
+            File foto;
+            String tipo;
 
-            File foto = new File(carpeta + nombre + ".jpg");
-            String tipo = "image/jpeg";
-
-            if (!foto.exists()) {
-                foto = new File(carpeta + nombre + ".png");
+            if (fotoJpg.isFile()) {
+                foto = fotoJpg;
+                tipo = "image/jpeg";
+            } else if (fotoPng.isFile()) {
+                foto = fotoPng;
                 tipo = "image/png";
-            }
-
-            if (!foto.exists()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "El cliente no tiene foto");
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
 
-            // Enviar los bytes para que el navegador muestre la imagen.
             response.setContentType(tipo);
             response.setHeader("Cache-Control", "private, no-store");
             byte[] imagen = FileUtils.readFully(foto.getAbsolutePath());
             response.getOutputStream().write(imagen);
 
+        } else if ("update".equalsIgnoreCase(action)) {
+
+            // Pendiente: implementar modificación del perfil
+            response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED,
+                    "La modificación del perfil todavía no está implementada");
+
         } else {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Accion no valida");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Acción no válida");
         }
     }
 
