@@ -3,7 +3,6 @@
     pageEncoding="UTF-8" %>
 
 <%@ page import="com.paula.checkmc.servlet.util.AttributeNames" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <link rel="stylesheet"
       href="${pageContext.request.contextPath}/css/user.css">
 
@@ -14,14 +13,16 @@
     );
 %>
 
+
+
 <c:choose>
     <c:when test="${empty usuarioConectado}">
-        <a href="${pageContext.request.contextPath}/html/public/usuarios/login.jsp">
-            Autenticarse
-        </a>
-        <a href="${pageContext.request.contextPath}/html/public/usuarios/register.jsp">
-            Registrarse 
-        </a>
+       <a href="${pageContext.request.contextPath}/controller/public/usuarios?action=login">
+    Autenticarse
+</a>
+      <a href="${pageContext.request.contextPath}/controller/public/usuarios?action=register">
+    Registrarse
+</a>
     </c:when>
 
     <c:otherwise>
@@ -34,14 +35,20 @@
                 <h3>Tu cuenta</h3>
 
                
-<a href="${pageContext.request.contextPath}/controller/private/cliente?action=detail">
-    Ver perfil
-</a>
+<c:if test="${sessionScope.tipoUsuario eq 'cliente'}">
+    <a href="${pageContext.request.contextPath}/controller/private/cliente?action=detail">
+        Ver perfil
+    </a>
+</c:if>
 
 
-                <a href="${pageContext.request.contextPath}/controller/public/usuarios?action=changeAccount">
-                    Cambiar cuenta
-                </a>
+<c:if test="${sessionScope.tipoUsuario eq 'empleado'}">
+    <a href="${pageContext.request.contextPath}/html/private/empleado/perfil.jsp">
+        Ver perfil
+    </a>
+</c:if>
+
+              
 
                 <a class="cmc-salir"
                    href="${pageContext.request.contextPath}/controller/public/usuarios?action=logout">

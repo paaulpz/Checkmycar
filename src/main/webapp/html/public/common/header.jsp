@@ -1,7 +1,8 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+         pageEncoding="UTF-8" %>
 <%@ page import="com.paula.checkmc.model.*" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -11,7 +12,9 @@
 
     <link rel="stylesheet"
       href="<%=request.getContextPath()%>/css/style.css?">
-
+      
+      <script src= "${pageContext.request.contextPath}/js/jquery-3.7.1.min.js" ></script>
+      
     <title>CheckMyCar</title>
 </head>
 
@@ -48,9 +51,11 @@
 
         <h3>Servicios</h3>
 
-        <a href="<%=request.getContextPath()%>/html/private/presupuesto/presupuestoSearch.jsp">
-            Consultar presupuestos
-        </a>
+       <c:if test="${sessionScope.tipoUsuario eq 'empleado'}">
+    <a href="${pageContext.request.contextPath}/html/private/presupuesto/presupuestoSearch.jsp">
+        Consultar presupuestos
+    </a>
+</c:if>
 
         <div class="titulo-servicio">
             Solicitar cita

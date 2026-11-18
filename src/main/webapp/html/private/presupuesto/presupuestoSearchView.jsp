@@ -2,13 +2,19 @@
 <%@ include file = "/html/private/presupuesto/presupuestoSearch.jsp"%>
 
 <!--  Resultados de busqueda -->
-<c:set var= "results"value ="${requestScope [AttributeNames.RESULTS]}" />
+<c:set var="results" value="${requestScope.results}" />
 <c:if test= "${not empty results}" >
-<p> Encontrados {results.total} resultados </p>
+<div class="presupuesto-resultados">
+<p> Encontrados ${results.total} resultados </p>
 <ol>
 <c:forEach var = "e" items="${results.page}">
-<li>${e.nombre}</li>
+<c:url var="urlDetalle" value="/presupuesto">
+    <c:param name="action" value="detail" />
+    <c:param name="id" value="${e.id}" />
+</c:url>
+<li><a href="<c:out value='${urlDetalle}' />"><c:out value="${e.nombre}" /></a></li>
 </c:forEach>
 </ol>
+</div>
 </c:if>
 <%@ include file="/html/public/common/footer.jsp"%>

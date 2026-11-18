@@ -3,65 +3,56 @@ package com.paula.checkmc.filter;
 import java.io.IOException;
 
 import com.paula.checkmc.model.ClienteDTO;
+import com.paula.checkmc.model.EmpleadoDTO;
 import com.paula.checkmc.servlet.util.AttributeNames;
-import com.paula.checkmc.servlet.util.SessionManager;
 
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebFilter({
     "/html/private/*",
-    "/controller/private/*"
+    "/controller/private/*",
+    "/presupuesto"
 })
-public class AuthenticatorFilter extends HttpFilter implements Filter {
-
-    public AuthenticatorFilter() {
-        super();
-    }
+public class AuthenticatorFilter extends HttpFilter {
 
     @Override
-    public void doFilter(ServletRequest request,
-                         ServletResponse response,
-                         FilterChain chain)
+    protected void doFilter(HttpServletRequest request,
+                            HttpServletResponse response,
+                            FilterChain chain)
             throws IOException, ServletException {
 
-        ClienteDTO cliente = (ClienteDTO) SessionManager.getAttribute(
-                request,
-                AttributeNames.USER
-        );
+        HttpSession session = request.getSession(false);
+        Object usuario = session == null
+                ? null
+                : session.getAttribute(AttributeNames.USER);
 
-        if (cliente != null) {
+        if (usuario == null) {
+            response.sendRedirect(request.getContextPath()
+                    + "/controller/public/usuarios?action=login");
+            return;
+        }
 
-            chain.doFilter(request, response);
+        String ruta = request.getServletPath();
 
-        } else {
+        boolean esRutaEmpleado = "/presupuesto".equals(ruta)
+                || ruta.startsWith("/html/private/presupuesto/")
+                || "/html/private/empleado/perfil.jsp".equals(ruta);
 
-        	    HttpServletRequest httpRequest =
-        	            (HttpServletRequest) request;
+        boolean tienePermiso = esRutaEmpleado
+                ? usuario instanceof EmpleadoDTO
+                : usuario instanceof ClienteDTO;
 
-        	    HttpServletResponse httpResponse =
-        	            (HttpServletResponse) response;
+        if (!tienePermiso) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
-        	    httpResponse.sendRedirect(
-        	            httpRequest.getContextPath()
-        	            + "/html/public/usuarios/login.jsp"
-        	    );
-        	}
-    }
-
-    @Override
-    public void init(FilterConfig fConfig) throws ServletException {
-    }
-
-    @Override
-    public void destroy() {
+        chain.doFilter(request, response);
     }
 }

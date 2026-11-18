@@ -131,7 +131,7 @@
 
                
 <!-- REGISTRO -->
-<a href="${pageContext.request.contextPath}/html/public/usuarios/register.jsp">
+<a href="${pageContext.request.contextPath}/controller/public/usuarios?action=register">
     ¿No tienes cuenta? Regístrate
 </a>
 
