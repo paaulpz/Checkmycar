@@ -1,4 +1,4 @@
-/*package com.paula.checkmc.service;
+package com.paula.checkmc.service;
 
 import jakarta.servlet.ServletException;
 
@@ -17,7 +17,7 @@ import com.paula.checkmc.service.impl.ProvinciaServiceImpl;
 /**
  * Servlet implementation class ProvinciaServlet
  */
-/*
+
 @WebServlet("/provincia")
 public class ProvinciaServlet extends HttpServlet {
 	
@@ -39,7 +39,12 @@ public class ProvinciaServlet extends HttpServlet {
 		String idPaisStr = request.getParameter("id-pais"); 
 		Long idPais = Long.valueOf(idPaisStr); 
 		
-		List<Provincia> provincias = provinciaService.findByPais(idPais);
+		List<Provincia> provincias;
+		try {
+		    provincias = provinciaService.findByPais(idPais);
+		} catch (Exception e) {
+		    throw new ServletException("No se pudieron cargar las provincias", e);
+		}
 		
 	response.setContentType("application/json");
 	        String json = gson.toJson(provincias);
@@ -56,4 +61,4 @@ public class ProvinciaServlet extends HttpServlet {
 		doGet(request, response);
 	}
 
-} */
+} 
