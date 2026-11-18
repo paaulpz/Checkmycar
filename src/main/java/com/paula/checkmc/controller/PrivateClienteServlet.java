@@ -46,7 +46,8 @@ public class PrivateClienteServlet extends HttpServlet {
             request.getRequestDispatcher("/html/private/cliente/perfil.jsp")
                    .forward(request, response);
 
-        } else if ("get-image".equalsIgnoreCase(action)) {
+        } else if ("get-image".equalsIgnoreCase(action)
+                || "descargarFoto".equalsIgnoreCase(action)) {
 
             File foto;
             String tipo;
@@ -64,6 +65,12 @@ public class PrivateClienteServlet extends HttpServlet {
 
             response.setContentType(tipo);
             response.setHeader("Cache-Control", "private, no-store");
+
+            if ("descargarFoto".equalsIgnoreCase(action)) {
+                response.setHeader("Content-Disposition",
+                        "attachment; filename=\"" + foto.getName() + "\"");
+            }
+
             byte[] imagen = FileUtils.readFully(foto.getAbsolutePath());
             response.getOutputStream().write(imagen);
 
@@ -76,7 +83,10 @@ public class PrivateClienteServlet extends HttpServlet {
         } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Acción no válida");
         }
+        
+           
     }
+    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

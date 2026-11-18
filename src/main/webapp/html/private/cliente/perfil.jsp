@@ -39,6 +39,7 @@
                             <span class="status-dot"></span>
                         </div>
                     </c:when>
+     
                     <c:otherwise>
                         <div class="avatar-grande">
                             <c:out value="${fn:toUpperCase(fn:substring(cliente.nombre, 0, 1))}" />
@@ -46,10 +47,15 @@
                         </div>
                     </c:otherwise>
                 </c:choose>
-
+                
+             
+    
                 <div class="perfil-header-textos">
                     <h1>Mi perfil</h1>
                     <p>Consulta tus datos personales de Checkmycar.</p>
+                    <a class="btn-descargar" href="<c:url value='/controller/private/cliente?action=descargarFoto' />">
+                       Descargar foto
+                    </a>
                 </div>
             </div>
             <div class="perfil-header-der">
