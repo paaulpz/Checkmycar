@@ -1,9 +1,11 @@
 package com.paula.checkmc.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import com.paula.checkmc.model.Cliente;
 import com.paula.checkmc.model.Empleado;
@@ -75,39 +77,8 @@ public class PresupuestoServlet extends HttpServlet {
 
 		if ("detail".equalsIgnoreCase(action)) {
 			mostrarDetalle(request, response);
-		} else if ("search".equalsIgnoreCase(action)) {
-			// Action: Buscar presupuestos
-			String nombre = request.getParameter("nombre");
-			String precioFinal = request.getParameter("precioFinal");
-
-			PresupuestoCriteria criteria = new PresupuestoCriteria();
-
-			criteria.setCocheMatricula(null);
-
-			try {
-
-				Results<PresupuestoDTO> results =
-				        presupuestoService.findByCriteria(
-				                criteria, 1, Integer.MAX_VALUE);
-
-				System.out.println("RESULTS = " + results);
-				System.out.println("TOTAL = " + results.getTotal());
-				System.out.println("PAGE = " + results.getPage());
-
-				request.setAttribute("results", results);
-
-				request.getRequestDispatcher(Views.PRESUPUESTO_SEARCH)
-				        .forward(request, response);
-
-			} catch (Exception e) {
-
-			    e.printStackTrace();
-
-			    PrintWriter writer = response.getWriter();
-			    writer.println("<h1>Error buscando presupuestos</h1>");
-			    writer.println("<p>" + e.getMessage() + "</p>");
-			}
-
+		} else if (action == null || "search".equalsIgnoreCase(action)) {
+			buscarPresupuestos(request, response);
 		} else if ("delete".equalsIgnoreCase(action)) {
 
 			String idStr = request.getParameter("id");
@@ -126,6 +97,86 @@ public class PresupuestoServlet extends HttpServlet {
 				);
 			}
 		}
+	}
+
+	private void buscarPresupuestos(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String nombre = leerFiltro(request, "nombre").toLowerCase(Locale.ROOT);
+		String numero = leerFiltro(request, "numero");
+		String estado = leerFiltro(request, "estado");
+		boolean buscar = "1".equals(request.getParameter("buscar"))
+				|| request.getParameter("nombre") != null || !numero.isEmpty() || !estado.isEmpty()
+				|| "POST".equals(request.getMethod());
+
+		try {
+			List<EstadoPresupuesto> estados = estadoService.findAll();
+			request.setAttribute("estadosBusqueda", estados);
+
+			if (buscar) {
+				Long id = leerFiltroNumerico(numero);
+				Long estadoId = leerFiltroNumerico(estado);
+				List<PresupuestoDTO> encontrados = new ArrayList<>();
+
+				if (id != null) {
+					PresupuestoDTO presupuesto = presupuestoService.findById(id);
+					if (presupuesto != null
+							&& (estadoId == null || estadoId.equals(presupuesto.getEstadoPresupuestoId()))
+							&& coincideNombre(presupuesto, nombre)) {
+						encontrados.add(presupuesto);
+					}
+				} else {
+					PresupuestoCriteria criteria = new PresupuestoCriteria();
+					criteria.setEstadoPresupuestoId(estadoId);
+					criteria.setAscDesc(false);
+
+					Results<PresupuestoDTO> resultados =
+							presupuestoService.findByCriteria(criteria, 1, Integer.MAX_VALUE);
+					for (PresupuestoDTO presupuesto : resultados.getPage()) {
+						if (coincideNombre(presupuesto, nombre)) {
+							encontrados.add(presupuesto);
+						}
+					}
+				}
+
+				Map<Long, String> estadosPorId = new HashMap<>();
+				for (EstadoPresupuesto opcion : estados) {
+					estadosPorId.put(opcion.getId(), opcion.getNombre());
+				}
+				request.setAttribute("estadosPorId", estadosPorId);
+				request.setAttribute("presupuestosEncontrados", encontrados);
+				request.setAttribute("totalEncontrados", encontrados.size());
+				request.setAttribute("busquedaRealizada", true);
+			}
+		} catch (NumberFormatException e) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			request.setAttribute("errorBusqueda", "Introduce un número de presupuesto y un estado válidos.");
+		} catch (Exception e) {
+			throw new ServletException("Error buscando presupuestos", e);
+		}
+
+		request.getRequestDispatcher(Views.PRESUPUESTO_SEARCH).forward(request, response);
+	}
+
+	private String leerFiltro(HttpServletRequest request, String nombre) {
+		String valor = request.getParameter(nombre);
+		return valor == null ? "" : valor.trim();
+	}
+
+	private Long leerFiltroNumerico(String filtro) {
+		if (filtro.isEmpty()) {
+			return null;
+		}
+		long valor = Long.parseLong(filtro);
+		if (valor <= 0) {
+			throw new NumberFormatException();
+		}
+		return valor;
+	}
+
+	private boolean coincideNombre(PresupuestoDTO presupuesto, String nombreBuscado) {
+		String nombre = presupuesto.getNombre();
+		return nombreBuscado.isEmpty()
+				|| (nombre != null && nombre.toLowerCase(Locale.ROOT).contains(nombreBuscado));
 	}
 
 	private void mostrarDetalle(HttpServletRequest request, HttpServletResponse response)
@@ -184,6 +235,7 @@ public class PresupuestoServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		request.setCharacterEncoding("UTF-8");
 		doGet(request, response);
 	}
 }

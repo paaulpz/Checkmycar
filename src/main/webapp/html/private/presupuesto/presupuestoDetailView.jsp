@@ -65,7 +65,16 @@
         </c:otherwise>
     </c:choose>
 
-    <a href="<c:url value='/html/private/presupuesto/presupuestoSearch.jsp' />">
+    <c:url var="urlVolverPresupuestos" value="/presupuesto">
+        <c:param name="action" value="search" />
+        <c:if test="${param.buscar eq '1'}">
+            <c:param name="buscar" value="1" />
+            <c:param name="numero" value="${param.numero}" />
+            <c:param name="nombre" value="${param.nombre}" />
+            <c:param name="estado" value="${param.estado}" />
+        </c:if>
+    </c:url>
+    <a href="<c:out value='${urlVolverPresupuestos}' />">
         Volver a la búsqueda
     </a>
 </section>

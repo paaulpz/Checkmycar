@@ -1,25 +1,66 @@
 .presupuesto-busqueda,
+.presupuesto-listado,
 .presupuesto-resultados {
     box-sizing: border-box;
-    width: min(48rem, calc(100% - 2rem));
+    width: min(54rem, calc(100% - 2rem));
     margin: 1.5rem auto;
+    color: #203042;
+    font-family: inherit;
+}
+
+.presupuesto-busqueda,
+.presupuesto-resultados {
     padding: clamp(1rem, 4vw, 1.75rem);
-    border: 1px solid #d9e0e5;
+}
+
+.presupuesto-busqueda,
+.presupuesto-resultados,
+.presupuesto-tarjeta {
+    border: 1px solid #dbe2e9;
     border-radius: 0.875rem;
     background: #fff;
-    color: #30363b;
-    font-family: inherit;
-    box-shadow: 0 6px 20px rgb(15 42 67 / 7%);
+    box-shadow: 0 6px 20px rgb(23 35 47 / 7%);
+}
+
+.presupuesto-busqueda h1,
+.presupuesto-listado h2 {
+    margin: 0;
+    color: #17232f;
+    line-height: 1.2;
 }
 
 .presupuesto-busqueda {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.75rem;
+    display: block;
+    text-align: left;
 }
 
-.presupuesto-busqueda input[type="text"],
-.presupuesto-busqueda input[type="submit"] {
+.presupuesto-busqueda h1 {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.presupuesto-listado h2 {
+    font-size: 1.25rem;
+}
+
+.presupuesto-busqueda .presupuesto-filtros {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr);
+    align-items: end;
+    gap: 1.5rem clamp(1.25rem, 3vw, 2rem);
+    margin-top: 1.75rem;
+}
+
+.presupuesto-busqueda .presupuesto-campo label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #203042;
+    font-weight: 600;
+}
+
+.presupuesto-busqueda .presupuesto-campo input,
+.presupuesto-busqueda .presupuesto-campo select,
+.presupuesto-acciones button,
+.presupuesto-acciones a {
     box-sizing: border-box;
     min-height: 2.75rem;
     padding: 0.6rem 0.9rem;
@@ -28,26 +69,107 @@
     font: inherit;
 }
 
-.presupuesto-busqueda input[type="text"] {
+.presupuesto-busqueda .presupuesto-campo input,
+.presupuesto-busqueda .presupuesto-campo select {
+    display: block;
     width: 100%;
     min-width: 0;
+    background: #fff;
+    color: #17232f;
 }
 
-.presupuesto-busqueda input[type="submit"] {
-    border-color: #1e5a8a;
-    background: #1e5a8a;
-    color: #fff;
+.presupuesto-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-top: 1.5rem;
+}
+
+.presupuesto-acciones button,
+.presupuesto-acciones a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 600;
+}
+
+.presupuesto-acciones button {
+    border-color: #17232f;
+    background: #17232f;
+    color: #fff;
     cursor: pointer;
 }
 
-.presupuesto-busqueda input[type="submit"]:hover {
-    background: #164568;
+.presupuesto-acciones button:hover {
+    background: #304459;
 }
 
-.presupuesto-busqueda input:focus-visible {
-    outline: 2px solid #1e5a8a;
+.presupuesto-acciones a {
+    background: #fff;
+    color: #203042;
+    text-decoration: none;
+}
+
+.presupuesto-acciones a:hover {
+    background: #f4f6f8;
+}
+
+.presupuesto-busqueda :is(input, select, button, a):focus-visible,
+.presupuesto-tarjeta:focus-visible {
+    outline: 2px solid #ae4324;
     outline-offset: 2px;
+}
+
+.presupuesto-error {
+    margin: 0.75rem 0 0;
+    color: #a72424;
+}
+
+.presupuesto-recuento,
+.presupuesto-sin-resultados {
+    margin: 0.5rem 0 0;
+    color: #46586a;
+}
+
+.presupuesto-listado .presupuesto-tarjetas {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.presupuesto-tarjeta {
+    box-sizing: border-box;
+    display: grid;
+    gap: 0.45rem;
+    padding: clamp(1rem, 3vw, 1.5rem);
+    color: #17232f;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+}
+
+.presupuesto-tarjeta:hover {
+    border-color: #ae4324;
+}
+
+.presupuesto-tarjeta:hover .presupuesto-nombre {
+    text-decoration: underline;
+}
+
+.presupuesto-referencia {
+    color: #a33c20;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.presupuesto-datos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    color: #46586a;
+    font-size: 0.9rem;
 }
 
 .presupuesto-resultados p {
@@ -67,11 +189,12 @@
 }
 
 .presupuesto-resultados li + li {
-    border-top: 1px solid #d9e0e5;
+    border-top: 1px solid #dbe2e9;
 }
 
-@media (max-width: 34rem) {
-    .presupuesto-busqueda {
+@media (max-width: 42rem) {
+    .presupuesto-busqueda .presupuesto-filtros {
         grid-template-columns: 1fr;
+        gap: 1rem;
     }
 }

@@ -1,11 +1,5 @@
-
-
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/presupuestos.css">
-
-<form class="presupuesto-busqueda" action="<%=request.getContextPath()%>/presupuesto" method="post">
-
-    <input type="hidden" name="action" value="search">
-    <input type="text" name="nombre" aria-label="Nombre del presupuesto" placeholder="ex: U2">
-    <input type="submit" value="Buscar">
-
-</form>
+<%@ page pageEncoding="UTF-8" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<c:redirect url="/presupuesto">
+    <c:param name="action" value="search" />
+</c:redirect>
