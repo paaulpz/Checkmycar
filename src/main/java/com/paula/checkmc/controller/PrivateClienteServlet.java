@@ -1,6 +1,9 @@
 package com.paula.checkmc.controller;
 
 import java.io.File;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 import com.paula.checkmc.model.ClienteDTO;
@@ -18,6 +21,8 @@ import jakarta.servlet.http.HttpSession;
 public class PrivateClienteServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    
+    private static final Logger logger = LogManager.getLogger(PrivateClienteServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -70,22 +75,24 @@ public class PrivateClienteServlet extends HttpServlet {
                 response.setHeader("Content-Disposition",
                         "attachment; filename=\"" + foto.getName() + "\"");
             }
-
-            byte[] imagen = FileUtils.readFully(foto.getAbsolutePath());
-            response.getOutputStream().write(imagen);
+            try {
+                byte[] imagen = FileUtils.readFully(foto.getAbsolutePath());
+                response.getOutputStream().write(imagen);
+            } catch (IOException e) {
+                logger.error("No se pudo servir la foto de perfil", e);
+                throw e;
+            }
 
         } else if ("update".equalsIgnoreCase(action)) {
-
-            // Pendiente: implementar modificación del perfil
             response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED,
                     "La modificación del perfil todavía no está implementada");
-
         } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Acción no válida");
         }
+    }
         
            
-    }
+
     
 
     @Override

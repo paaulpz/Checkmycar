@@ -1,11 +1,15 @@
 package com.paula.checkmc.controller;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.paula.checkmc.model.Cliente;
 import com.paula.checkmc.model.Empleado;
@@ -45,6 +49,8 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @WebServlet("/presupuesto")
 public class PresupuestoServlet extends HttpServlet {
+	
+	private static final Logger logger = LogManager.getLogger(PresupuestoServlet.class);
 
 	private PresupuestoService presupuestoService = null;
 	private final ClienteService clienteService = new ClienteServiceImpl();
@@ -89,7 +95,7 @@ public class PresupuestoServlet extends HttpServlet {
 
 			} catch (Exception e) {
 
-				e.printStackTrace();
+				logger.error("No se pudo borrar el presupuesto", e);
 
 				response.getWriter().append(
 					"<i>No ha podido borrarse el presupuesto. "

@@ -1,4 +1,3 @@
-
 package com.paula.checkmc.controller;
 
 import java.io.File;
@@ -10,6 +9,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.paula.checkmc.model.Cliente;
 import com.paula.checkmc.model.ClienteDTO;
@@ -42,6 +44,8 @@ import jakarta.servlet.http.Part;
 public class PublicUsuariosServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LogManager.getLogger(PublicUsuariosServlet.class);
 
     private static final String LOGIN_JSP =
             "/html/public/usuarios/login.jsp";
@@ -158,7 +162,7 @@ public class PublicUsuariosServlet extends HttpServlet {
                     try {
                         FileUtils.write(ruta, foto.getInputStream().readAllBytes());
                     } catch (IOException e) {
-                        getServletContext().log("Se registró el cliente, pero falló la foto", e);
+                        logger.warn("Se registró el cliente, pero falló la foto", e);
                     }
                 }
 
@@ -167,7 +171,7 @@ public class PublicUsuariosServlet extends HttpServlet {
                         + "/controller/public/usuarios?action=login");
 
             } catch (Exception e) {
-                getServletContext().log("Error registrando cliente", e);
+                logger.error("Error registrando cliente", e);
                 request.setAttribute("registerError", "Error al registrar el cliente");
                 mostrarRegistro(request, response);
             }
@@ -273,15 +277,13 @@ private void mostrarRegistro(HttpServletRequest request,
                 .forward(request, response);
 
     } catch (Exception e) {
-        getServletContext().log("Error cargando los catálogos", e);
+        logger.error("Error cargando los catálogos", e);
         if (!response.isCommitted()) {
             response.sendError(500, "Error cargando los catálogos");
         }
     }
 }
 
-
-    // Igual que en el código del profesor: el POST usa doGet.
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -331,13 +333,9 @@ private void mostrarRegistro(HttpServletRequest request,
                 usuario = cliente;
 
                 if (cliente != null) {
-                    getServletContext().log(
-                            "LOGIN CLIENTE CORRECTO"
-                    );
+                    logger.info("LOGIN CLIENTE CORRECTO");
                 } else {
-                    getServletContext().log(
-                            "LOGIN CLIENTE INCORRECTO"
-                    );
+                    logger.warn("LOGIN CLIENTE INCORRECTO");
                 }
 
             }
@@ -369,15 +367,11 @@ private void mostrarRegistro(HttpServletRequest request,
 
                 if (empleado != null) {
 
-                    getServletContext().log(
-                            "LOGIN EMPLEADO CORRECTO"
-                    );
+                    logger.info("LOGIN EMPLEADO CORRECTO");
 
                 } else {
 
-                    getServletContext().log(
-                            "LOGIN EMPLEADO INCORRECTO"
-                    );
+                    logger.warn("LOGIN EMPLEADO INCORRECTO");
                 }
 
             } else {
@@ -440,10 +434,7 @@ private void mostrarRegistro(HttpServletRequest request,
 
         } catch (Exception e) {
 
-            getServletContext().log(
-                    "ERROR AL INICIAR SESIÓN",
-                    e
-            );
+            logger.error("ERROR AL INICIAR SESIÓN", e);
 
             mostrarError(
                     request,
@@ -496,10 +487,7 @@ private void mostrarRegistro(HttpServletRequest request,
 
         } catch (Exception e) {
 
-            getServletContext().log(
-                    "ERROR AL CARGAR ROLES",
-                    e
-            );
+            logger.error("ERROR AL CARGAR ROLES", e);
 
             if (request.getAttribute("loginError") == null) {
 
